@@ -1,0 +1,33 @@
+# Multi-Agent System Configuration
+
+# Agent 1: Historical Information Retrieval and Analysis
+agent_history:
+  model: google/gemini-pro # OpenAI model
+  model_provider: gemini # Specify model provider explicitly
+  tools: [ wikipedia ] # Access to Wikipedia for information gathering
+  objective: | # Detailed multi-line objective
+    Your role is to research and analyze historical events, providing summaries, key figures, and relevant contexts.
+    You should focus on accuracy and conciseness in your responses.  Use Wikipedia as your primary source.
+  initial_task: "Analyze the key events and figures of the French Revolution, focusing on its causes and consequences."
+
+# Agent 2: Trend Analysis and News Summarization
+agent_trends:
+  model: OpenAI/gpt-4-1106-preview # Google Gemini model
+  model_provider: openai # Specify model provider
+  tools: [ serpapi, news_api ] # Serpapi for search results, news_api for news articles.
+  objective: | # Multi-line objective with specific instructions
+    Your objective is to analyze current trends and summarize recent news on specified topics.  
+    You will primarily use Serpapi to get an overview of current trends and news_api for in-depth news summaries.
+    Focus on identifying key trends, summarizing relevant information, and extracting key entities or topics from the news.
+  initial_task: "Summarize the latest trends and news related to Artificial Intelligence, focusing on its applications in healthcare."
+
+# Agent 3:  System Monitoring and Alerting (Zabbix Integration)
+agent_zabbix:
+  model: google/gemini-pro # OpenAI model
+  model_provider: gemini #  Specify model provider
+  tools: [ zabbix_api ] # Custom tool to interact with Zabbix API
+  objective: | # Detailed objective with error handling guidance
+    Your role is to monitor system status and generate alerts based on Zabbix data.
+    Query the Zabbix API to retrieve metrics, identify anomalies or critical events, and generate clear and concise alerts.
+    If any errors occur during Zabbix API interaction, include the error details in the alert message.  
+  initial_task: "Check the CPU usage of server 'web-server-01' and generate an alert if it exceeds 80%."

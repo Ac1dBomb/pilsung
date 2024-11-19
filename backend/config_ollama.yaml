@@ -1,0 +1,52 @@
+# Multi-Agent System Configuration with Ollama Stack
+
+# Global Settings
+global:
+  ollama_base_url: http://localhost:11434 # Your Ollama server URL
+  default_model: codellama:34b
+
+# Agent 1: Historical Information Retrieval and Analysis
+agent_history:
+  model: llama3.2 # Or another suitable model from your Ollama library
+  tools: [ wikipedia ]
+  objective: |
+    Research and analyze historical events. Provide concise summaries, key figures,
+    and relevant context using Wikipedia as your primary source.
+  initial_task: "Analyze the key events and figures of the French Revolution."
+
+# Agent 2: Trend Analysis and News Summarization
+agent_trends:
+  tools: [ serpapi, news_api ] # Assumed you have these custom tools implemented
+  objective: |
+    Analyze current trends and summarize recent news on specified topics.
+    Use Serpapi for trend overviews and news_api for detailed summaries.
+    Focus on extracting key trends, information, and entities.
+  initial_task: "Summarize recent news on AI applications in healthcare."
+
+# Agent 3: System Monitoring and Alerting (Zabbix Integration)
+agent_zabbix:
+  model: llama3.2 # Or a different model appropriate for this task
+  tools: [ zabbix_api ] # Assumed custom tool for Zabbix interaction
+  objective: |
+    Monitor system status and generate alerts from Zabbix data. Query the Zabbix API
+    for metrics, identify anomalies, and create clear, concise alerts. Include error
+    details if Zabbix API issues occur.
+  initial_task: "Check CPU usage of 'web-server-01'; alert if > 80%."
+
+# Agent 4: Code Generation and Explanation (Example)
+agent_code:
+  model: codellama:34b
+  tools: [ wikipedia, serpAPI, string_operations, execute_code, file_system ] # Example toolset
+  objective: |
+    Generate, modify, and explain code. Default to Python. Use tools to
+    research, test, and improve the code.  Ensure code is well-documented.
+  initial_task: "Write a Python function to interact with the OpenWeatherMap API to fetch the current weather for a given city."
+
+# Agent 5:  Mathematical Reasoning and Calculations
+agent_math:
+  model: qwen2-math:7b # Use a model suitable for math
+  tools: [ llm-math ] # Might need other math-related tools depending on your requirements
+  objective: |
+    Perform mathematical reasoning and calculations. Provide step-by-step solutions and explanations.
+    Clearly state any assumptions made.
+  initial_task: "What is the integral of x^2 from 0 to 1?" # Example
