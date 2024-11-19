@@ -1,36 +1,119 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import './App.css';
-import QueryInput from './components/QueryInput';
-import DbResponse from './components/DbResponse';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Outlet, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import CircularProgress from '@mui/material/CircularProgress'; // For loading indication
-import Alert from '@mui/material/Alert'; // For error display
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'; // For data fetching
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import axios from 'axios'; // For API requests
+import api from './services/api'; // Your API configuration
 
+
+// Use lazy loading for better performance
+const Header = React.lazy(() => import('./components/Header'));
+const Home = React.lazy(() => import('./components/Home'));
+const Resources = React.lazy(() => import('./components/resources'));
+const Database = React.lazy(() => import('./components/database'));
+const About = React.lazy(() => import('./components/about'));
+const Contact = React.lazy(() => import('./components/contact'));
+const Account = React.lazy(() => import('./components/account'));
+const Login = React.lazy(() => import('./components/login'));
+const Logout = React.lazy(() => import('./components/logout'));
+const SignUp = React.lazy(() => import('./components/signup')); // Import SignUp
+const AdminDashboard = React.lazy(() => import('./components/AdminDashboard')); //Import Admin
 
 
 const theme = createTheme();
-const queryClient = new QueryClient(); // Initialize queryClient
-
+const queryClient = new QueryClient();
 
 function App() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+
+    useEffect(() => {
+        const storedLoggedInStatus = localStorage.getItem('isLoggedIn');
+        setIsLoggedIn(storedLoggedInStatus === 'true');
+    }, []);
+
+
+
+
+    const RequireAuth = ({ children }) => { // Authentication wrapper
+        return isLoggedIn ? (
+            children
+         ) : (
+
+            <Navigate to="/login" replace />
+
+        );
+
+
+    };
+
+
+
+
+
     return (
+
         <QueryClientProvider client={queryClient}> {/* Wrap with QueryClientProvider */}
-            <Router>
-                <ThemeProvider theme={theme}>
-                    <CssBaseline />
-                    <Routes>
-                        <Route path="/" element={<Home />} /> {/* Home route */}
-                    </Routes>
-                </ThemeProvider>
-            </Router>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Router>
+
+                    <Suspense fallback={<div>Loading...</div>}> {/* Handle lazy loading */}
+                        <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} /> {/* Pass login state */}
+
+                        <Routes>
+                            <Route path="/" element={<Layout />}>
+                                <Route index element={<Home />} />
+                                <Route path="resources" element={<Resources />} />
+                                <Route path="database" element={<Database />} />
+                                <Route path="about" element={<About />} />
+                                <Route path="contact" element={<Contact />} />
+                                <Route
+                                    path="account"
+                                    element={
+                                      <RequireAuth> {/* Protect the account route */}
+                                        <Account />
+                                      </RequireAuth>
+
+                                    }
+                                />
+
+                                 <Route path="login" element={<Login setIsLoggedIn={setIsLoggedIn} />} /> {/*Pass setIsLoggedIn*/}
+
+                                <Route path="logout" element={<Logout setIsLoggedIn={setIsLoggedIn} />} /> {/*Pass setIsLoggedIn*/}
+                                <Route path="signup" element={<SignUp setIsLoggedIn={setIsLoggedIn} />} />
+                                <Route path="admin" element={<AdminDashboard />} /> {/* Admin route */}
+
+                            </Route>
+
+
+                        </Routes>
+
+
+
+
+                    </Suspense>
+
+
+
+                </Router>
+
+
+            </ThemeProvider>
+
+
         </QueryClientProvider>
 
-    );
-}
 
+    );
+
+
+
+}
 function Home() { // Separated Home component for clarity
     const [query, setQuery] = useState('');
     const [dbResults, setDbResults] = useState(null);
@@ -79,25 +162,41 @@ function Home() { // Separated Home component for clarity
 
 async function executeQuery(query) {
     try {
-        const response = await fetch('/api/db_interact', { // fetch API is built-in
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ query }), // Send the query in the request body
-        });
-
+        const response = await api.post('/db_interact', { query });
         if (!response.ok) {
-            const errorData = await response.json() // Attempt to parse error details
-            const errorMessage = errorData?.error || response.statusText
-            throw new Error(errorMessage);
+            const errorData = await response.json(); // Attempt to get error details
+            const errorMessage = errorData?.error || response.statusText;
+            throw new Error(errorMessage); //Throw a more specific error if available
+
         }
-        return await response.json();
+
+
+        return await response.json(); // Parse as JSON after status check
     } catch (error) {
-        console.error("API Error:", error);
-        throw error
+        console.error("API Error:", error); // Keep this console log for API debugging
+
+        throw error; //Re-throw to be handled by react-query
+
+
     }
 }
+
+
+
+
+
+function Layout() {
+    return (
+        <div style={{ padding: '20px' }}>
+            <Outlet /> {/* Content of child routes goes here */}
+
+        </div>
+
+
+    );
+
+}
+
 
 
 export default App;
