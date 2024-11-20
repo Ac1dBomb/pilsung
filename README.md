@@ -1,4 +1,4 @@
-# Pilsung: Your Natural Language Interface to PostgreSQL
+# Pilsung 필승 : Certain Victory - Your Natural Language Interface (LLM) to PostgreSQL
 
 Pilsung empowers you to interact with your PostgreSQL database using intuitive natural language, streamlining data manipulation and retrieval.  Leveraging the power of LangChain for advanced natural language processing and seamlessly deployed on Render, Pilsung offers a robust and efficient solution for database interaction.
 
