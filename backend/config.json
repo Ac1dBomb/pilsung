@@ -78,3 +78,11 @@
     "region": "your-render-region"    //  (e.g., "frankfurt")
     }
 }
+
+{
+  "compilerOptions": {
+    "types": [
+      "unplugin-icons/types/react",
+    ]
+  }
+}

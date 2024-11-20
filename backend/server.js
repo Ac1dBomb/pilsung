@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const { Pool } = require('pg');
-
+const userRoutes = require('./api/users');
+const queryRoutes = require('./api/query');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -30,6 +31,7 @@ app.get('/api/data', async (req, res) => {
   }
 
 });
-
+app.use('/api/users', userRoutes); // Mount user routes under /api/users
+app.use('/api/query', queryRoutes); // Mount query routes under /api/query
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

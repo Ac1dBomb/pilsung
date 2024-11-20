@@ -1,8 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import Icons from 'unplugin-icons/vite'
+
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react()],  Icons({ /* options */ }),
   server: {
     proxy: { // Correct proxy configuration
       '/myapi': {  // '/api' or '/myapi', adjust as needed to match your backend
